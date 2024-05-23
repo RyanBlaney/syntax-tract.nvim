@@ -19,7 +19,7 @@ M.setup = function(opts)
 
   -- Function to conceal words
   local function conceal_words(bufnr, lang_opts)
-    local ns_id = vim.api.nvim_create_namespace("syntax_tract")
+    local ns_id = vim.api.nvim_create_namespace("syntax-tract")
     local hl_group = "SyntaxTractConcealed"
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
     for linenr, line in ipairs(lines) do
@@ -39,7 +39,7 @@ M.setup = function(opts)
 
   -- Function to remove concealment on the current line
   local function reveal_line(bufnr, line_nr)
-    local ns_id = vim.api.nvim_create_namespace("syntax_tract")
+    local ns_id = vim.api.nvim_create_namespace("syntax-tract")
     vim.api.nvim_buf_clear_namespace(bufnr, ns_id, line_nr, line_nr + 1)
   end
 
@@ -48,9 +48,9 @@ M.setup = function(opts)
     vim.cmd(string.format([[
       augroup SyntaxTract_%s
         autocmd!
-        autocmd BufReadPost,BufWritePost *.%s lua require('syntax_tract').conceal_words(0, '%s')
-        autocmd CursorMoved *.%s lua require('syntax_tract').reveal_line(0, vim.fn.line('.') - 1)
-        autocmd CursorMoved *.%s lua require('syntax_tract').conceal_words(0, '%s')
+        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words(0, '%s')
+        autocmd CursorMoved *.%s lua require('syntax-tract').reveal_line(0, vim.fn.line('.') - 1)
+        autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words(0, '%s')
       augroup END
     ]], lang, lang, lang, lang, lang, lang))
   end
