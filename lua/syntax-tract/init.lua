@@ -1,4 +1,4 @@
-require('syntax-tract').setup({
+require('syntax-tract.syntax-tract').setup({
   languages = {
     cpp = {
       words = {
