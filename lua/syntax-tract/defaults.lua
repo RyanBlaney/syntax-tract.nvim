@@ -1,4 +1,5 @@
-local M = function()
+local M = {}
+M.defaults = {
   languages = {
     cpp = {
       words = {
@@ -52,6 +53,6 @@ local M = function()
       color = "#ff8a8a",
     },
   }
-end
+}
 
 return M
