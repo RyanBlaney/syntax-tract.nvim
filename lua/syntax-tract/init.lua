@@ -56,4 +56,12 @@ M.setup = function(opts)
   end
 end
 
+M.ft = function()
+  local ft = {}
+  for lang, _ in pairs(M.opts.languages) do
+    table.insert(ft, lang)
+  end
+  return ft
+end
+
 return M
