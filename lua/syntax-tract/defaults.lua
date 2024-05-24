@@ -1,7 +1,5 @@
 local M = {}
 M.defaults = {
-  lazy= true,
-  ft = {"cpp"},
   languages = {
     cpp = {
       words = {

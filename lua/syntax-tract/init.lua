@@ -13,6 +13,9 @@ M.setup = function(opts)
     vim.cmd(string.format("highlight SyntaxTractConcealed_%s ctermfg=LightRed guifg=%s", lang, lang_opts.color))
   end
 
+  M.ft = {"cpp"}
+  M.lazy = true
+
   -- Function to conceal words
   M.conceal_words = function(bufnr, lang)
     local lang_opts = M.opts.languages[lang]
@@ -54,6 +57,14 @@ M.setup = function(opts)
       augroup END
     ]], lang, lang, lang, lang, lang, lang))
   end
+
+  vim.cmd("augroup LoadSyntaxTract")
+  vim.cmd("autocmd!")
+  for lang, _ in pairs(defaults.languages) do
+    vim.cmd(string.format("autocmd FileType %s lua require('syntax-tract').setup()", lang))
+  end
+  vim.cmd("augroup END")
+
 end
 
 return M
