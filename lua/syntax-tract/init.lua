@@ -13,14 +13,6 @@ M.setup = function(opts)
     vim.cmd(string.format("highlight SyntaxTractConcealed_%s ctermfg=LightRed guifg=%s", lang, lang_opts.color))
   end
 
-  -- Set file types for lazy loading
-  M.ft = {"cpp"}
-  -- for lang, _ in pairs(M.opts.languages) do
-  --   print("Detected language: " .. tostring(lang))
-  --   table.insert(M.ft, lang)
-  -- end
-  M.lazy = true
-
   -- Function to conceal words
   M.conceal_words = function(bufnr, lang)
     local lang_opts = M.opts.languages[lang]
