@@ -13,8 +13,6 @@ M.setup = function(opts)
     vim.cmd(string.format("highlight SyntaxTractConcealed_%s ctermfg=LightRed guifg=%s", lang, lang_opts.color))
   end
 
-  M.ft = {"cpp"}
-  M.lazy = true
 
   -- Function to conceal words
   M.conceal_words = function(bufnr, lang)
