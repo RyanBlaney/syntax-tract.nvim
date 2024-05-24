@@ -50,6 +50,7 @@ M.defaults = {
         ["static_cast<uintptr_t>"] = "⚙",
         ["static_cast<std::string>"] = "⚙",
         ["static_cast<std::wstring>"] = "⚙",
+        ["return"] = "⟽",
       },
       color = "#ff8a8a",
     },

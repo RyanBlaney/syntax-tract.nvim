@@ -2,10 +2,7 @@ local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
 -- Default options
-
-
 M.setup = function(opts)
-  
   -- Merge user options with default options
   M.opts = vim.tbl_deep_extend("force", defaults, opts or {})
 
@@ -25,14 +22,16 @@ M.setup = function(opts)
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
     for linenr, line in ipairs(lines) do
       for word, symbol in pairs(lang_opts.words) do
-        local start_pos, end_pos = string.find(line, word)
+        -- Escape special characters and add beginning-of-line anchor
+        local escaped_word = word:gsub("([.*+?^$()%%{}|[\\]])", "%%%1")
+        local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_pos,
             conceal = symbol,
             hl_group = hl_group,
           })
-          start_pos, end_pos = string.find(line, word, end_pos + 1)
+          start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
         end
       end
     end
@@ -56,6 +55,5 @@ M.setup = function(opts)
     ]], lang, lang, lang, lang, lang, lang))
   end
 end
-
 
 return M
