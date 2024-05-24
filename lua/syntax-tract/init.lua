@@ -24,8 +24,6 @@ M.setup = function(opts)
       for word, symbol in pairs(lang_opts.words) do
         -- Escape special characters and add beginning-of-line anchor
         local pattern = word:gsub("([.*+?^$()%%{}|[\\]])", "%%%1")
-        pattern = "^%s*" .. pattern -- Ensure it matches with optional leading whitespace
-
         -- Iterate over all matches in the line
         local start_pos = 1
         while true do
