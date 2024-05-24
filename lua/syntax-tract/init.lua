@@ -5,20 +5,7 @@ local defaults = require('syntax-tract.defaults').defaults
 
 
 M.setup = function(opts)
-  local ft = {}
-  for lang, _ in pairs(opts.languages or defaults.languages) do
-    table.insert(ft, lang)
-  end
-
-  -- Ensure Lazy.nvim recognizes the plugin and sets options
-  if vim.g.lazy_plugins then
-    local plugin_name = 'RyanBlaney/syntax-tract.nvim'
-    if vim.g.lazy_plugins[plugin_name] then
-      vim.g.lazy_plugins[plugin_name].ft = ft
-      vim.g.lazy_plugins[plugin_name].lazy = true
-    end
-  end
-
+  
   -- Merge user options with default options
   M.opts = vim.tbl_deep_extend("force", defaults, opts or {})
 
