@@ -62,8 +62,14 @@ M.setup = function(opts)
       augroup END
     ]], lang, lang, lang, lang, lang, lang))
   end
+
+  if vim.g.lazy_plugins then
+    local plugin_name = 'RyanBlaney/syntax-tract.nvim'
+    if vim.g.lazy_plugins[plugin_name] then
+      vim.g.lazy_plugins[plugin_name].ft = M.ft
+      vim.g.lazy_plugins[plugin_name].lazy = M.lazy
+    end
+  end
 end
-
-
 
 return M
