@@ -7,6 +7,8 @@ For **lazy-nvim** users:
 ```lua
 {
     'RyanBlaney/syntax-tract.nvim',
+    lazy = true,
+    ft = {"cpp"}, -- add any other languages
     opts = {
       languages = {
         cpp = {
