@@ -24,13 +24,17 @@ M.setup = function(opts)
       for word, symbol in pairs(lang_opts.words) do
         -- Escape special characters and add beginning-of-line anchor
         local pattern = word:gsub("([.*+?^$()%%{}|[\\]])", "%%%1")
+        pattern = "^%s*" .. pattern -- Ensure it matches with optional leading whitespace
+
         -- Iterate over all matches in the line
         local start_pos = 1
         while true do
           local s, e = line:find(pattern, start_pos)
           if not s then break end
+          -- Ensure end_col does not exceed line length
+          if e > #line then e = #line end
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, s-1, {
-            end_col = s + #word - 1,
+            end_col = e,
             conceal = symbol,
             hl_group = hl_group,
           })
