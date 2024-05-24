@@ -30,7 +30,7 @@ M.setup = function(opts)
           local s, e = line:find(pattern, start_pos)
           if not s then break end
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, s-1, {
-            end_col = e,
+            end_col = s + #word - 1,
             conceal = symbol,
             hl_group = hl_group,
           })
