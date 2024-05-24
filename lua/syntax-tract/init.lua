@@ -1,3 +1,4 @@
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -24,7 +25,7 @@ M.setup = function(opts)
       for word, symbol in pairs(lang_opts.words) do
         -- Escape special characters
         local escaped_word = word:gsub("([.*+?^$()%%{}|[\\]])", "%%%1")
-        -- Use Lua's pattern matching to find the word
+        -- Find all matches in the line
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
@@ -58,3 +59,4 @@ M.setup = function(opts)
 end
 
 return M
+
