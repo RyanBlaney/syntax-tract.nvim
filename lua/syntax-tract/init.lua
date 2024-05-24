@@ -60,7 +60,7 @@ M.setup = function(opts)
     if vim.g.lazy_plugins[plugin_name] then
       vim.g.lazy_plugins[plugin_name].ft = {}
       for lang, _ in pairs(M.opts.languages) do
-        table.insert(vim.g.lazy_plugins[plugin_name].ft, lang)
+        table.insert(vim.g.lazy_plugins[plugin_name].ft, tostring(lang))
       end
       vim.g.lazy_plugins[plugin_name].lazy = true
     end
