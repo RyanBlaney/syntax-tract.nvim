@@ -13,12 +13,6 @@ M.setup = function(opts)
     vim.cmd(string.format("highlight SyntaxTractConcealed_%s ctermfg=LightRed guifg=%s", lang, lang_opts.color))
   end
 
-   M.ft = {}
-  for lang, _ in pairs(M.opts.languages) do
-    table.insert(M.ft, tostring(lang))
-  end
-  M.lazy = true
-
   -- Function to conceal words
   M.conceal_words = function(bufnr, lang)
     local lang_opts = M.opts.languages[lang]
@@ -62,20 +56,17 @@ M.setup = function(opts)
   end
 
   if vim.g.lazy_plugins then
-    local plugin_name = 'RyanBlaney/syntax-tract'
+    local plugin_name = 'RyanBlaney/syntax-tract.nvim'
     if vim.g.lazy_plugins[plugin_name] then
-      vim.g.lazy_plugins[plugin_name].ft = M.ft
-      vim.g.lazy_plugins[plugin_name].lazy = M.lazy
+      vim.g.lazy_plugins[plugin_name].ft = {}
+      for lang, _ in pairs(M.opts.languages) do
+        table.insert(vim.g.lazy_plugins[plugin_name].ft, lang)
+      end
+      vim.g.lazy_plugins[plugin_name].lazy = true
     end
   end
 
 end
 
-vim.cmd("augroup LoadSyntaxTract")
-vim.cmd("autocmd!")
-for lang, _ in pairs(defaults.languages) do
-  vim.cmd(string.format("autocmd FileType %s lua require('syntax-tract').setup()", lang))
-end
-vim.cmd("augroup END")
 
 return M
