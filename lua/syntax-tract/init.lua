@@ -14,11 +14,11 @@ M.setup = function(opts)
   end
 
   -- Set file types for lazy loading
-  M.ft = {}
-  for lang, _ in pairs(M.opts.languages) do
-    print("Detected language: " .. tostring(lang))
-    table.insert(M.ft, lang)
-  end
+  M.ft = {"cpp"}
+  -- for lang, _ in pairs(M.opts.languages) do
+  --   print("Detected language: " .. tostring(lang))
+  --   table.insert(M.ft, lang)
+  -- end
   M.lazy = true
 
   -- Function to conceal words
@@ -61,14 +61,6 @@ M.setup = function(opts)
         autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words(0, '%s')
       augroup END
     ]], lang, lang, lang, lang, lang, lang))
-  end
-
-  if vim.g.lazy_plugins then
-    local plugin_name = 'RyanBlaney/syntax-tract.nvim'
-    if vim.g.lazy_plugins[plugin_name] then
-      vim.g.lazy_plugins[plugin_name].ft = M.ft
-      vim.g.lazy_plugins[plugin_name].lazy = M.lazy
-    end
   end
 end
 
