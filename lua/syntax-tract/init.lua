@@ -16,7 +16,7 @@ M.setup = function(opts)
   -- Set file types for lazy loading
   M.ft = {}
   for lang, _ in pairs(M.opts.languages) do
-    table.insert(M.ft, lang)
+    table.insert(M.ft, tostring(lang))
   end
   M.lazy = true
 
