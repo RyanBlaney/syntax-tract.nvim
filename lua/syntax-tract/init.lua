@@ -65,12 +65,12 @@ M.setup = function(opts)
       end
 
       for _, pair in ipairs(brace_pairs) do
-        vim.api.nvim_buf_set_extmark(bufnr, ns_id, pair.open.linenr + 1, pair.open.col, {
+        vim.api.nvim_buf_set_extmark(bufnr, ns_id, pair.open.linenr - 1, pair.open.col, {
           end_col = pair.open.col + 1,
           conceal = "",
           hl_group = hl_group,
         })
-        vim.api.nvim_buf_set_extmark(bufnr, ns_id, pair.close.linenr + 1, pair.close.col, {
+        vim.api.nvim_buf_set_extmark(bufnr, ns_id, pair.close.linenr - 1, pair.close.col, {
           end_col = pair.close.col + 1,
           conceal = "",
           hl_group = hl_group,
@@ -92,7 +92,7 @@ M.setup = function(opts)
     local brace_pairs = vim.b[bufnr].brace_pairs or {}
     print(string.format("Revealing line %d, brace_pairs count: %d", line_nr, #brace_pairs))
     for _, pair in ipairs(brace_pairs) do
-      if (line_nr >= pair.open.linenr and line_nr <= pair.close.linenr) then
+      if (line_nr >= pair.open.linenr - 1 and line_nr <= pair.close.linenr - 1) then
         print(string.format("Revealing brace pair: open(%d, %d), close(%d, %d)",
           pair.open.linenr, pair.open.col, pair.close.linenr, pair.close.col))
         vim.api.nvim_buf_clear_namespace(bufnr, ns_id, pair.open.linenr, pair.open.linenr + 1)
