@@ -42,9 +42,10 @@ M.setup = function(opts)
 
     if lang_opts.hide_braces then
       for linenr, line in ipairs(lines) do
-        local start_pos = 1
+        local start_pos = 1 | nil
+        local end_pos = 1 | nil
         while start_pos <= #line do
-          local start_pos, end_pos = string.find(line, "[{}]", start_pos)
+          start_pos, end_pos = string.find(line, "[{}]", start_pos)
           if not start_pos then break end
           local brace_char = line:sub(start_pos, start_pos)
           if brace_char == "{" then
