@@ -105,9 +105,10 @@ M.setup = function(opts)
   end
 
   -- Function to handle CursorMoved event
-  M.handle_cursor_moved = function(bufnr, line_nr)
+  M.handle_cursor_moved = function(bufnr)
+    local line_nr = vim.fn.line('.') - 1
     M.reveal_braces(bufnr, line_nr)
-    -- M.conceal_words(bufnr, vim.bo[bufnr].filetype)
+    M.conceal_words(bufnr, vim.bo[bufnr].filetype)
   end
 
   -- Setup autocommands for each language
@@ -117,9 +118,9 @@ M.setup = function(opts)
         autocmd!
         autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words(0, '%s')
         autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_braces(0, '%s')
-        autocmd CursorMoved *.%s lua require('syntax-tract').handle_cursor_moved(0, vim.fn.line('.') - 1)
+        autocmd CursorMoved *.%s lua require('syntax-tract').handle_cursor_moved(0)
       augroup END
-    ]], lang, lang, lang, lang))
+    ]], lang, lang, lang, lang, lang, lang))
   end
 end
 
