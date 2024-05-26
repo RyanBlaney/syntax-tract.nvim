@@ -21,8 +21,6 @@ M.setup = function(opts)
     local ns_id = vim.api.nvim_create_namespace("syntax_tract")
     local hl_group = "SyntaxTractConcealed_" .. lang
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-    local brace_stack = {}
-    local brace_pairs = {}
 
     -- Clear any existing extmarks and brace pairs
     vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
@@ -46,32 +44,29 @@ M.setup = function(opts)
       end
     end
 
-    -- Find and conceal braces
+    -- Use Treesitter to find brace pairs
     if lang_opts.hide_braces then
-      for linenr, line in ipairs(lines) do
-        local pos = 1
-        local indentation = #line:match("^%s*") -- Calculate indentation level
-        while pos <= #line do
-          local start_pos, end_pos = string.find(line, "[{}]", pos)
-          if not start_pos then break end
-          local brace_char = line:sub(start_pos, start_pos)
-          if brace_char == "{" then
-            table.insert(brace_stack, { linenr = linenr - 1, col = start_pos - 1, indent = indentation })
-          elseif brace_char == "}" and #brace_stack > 0 then
-            local open_brace = brace_stack[#brace_stack]
-            if open_brace.indent == indentation then
-              table.remove(brace_stack)
-              table.insert(brace_pairs, {
-                open = open_brace,
-                close = { linenr = linenr - 1, col = start_pos - 1 }
-              })
-            end
-          end
-          pos = end_pos + 1
+      local parser = vim.treesitter.get_parser(bufnr, lang)
+      local tree = parser:parse()[1]
+      local root = tree:root()
+
+      local function traverse(node)
+        if node:type() == "block" then
+          local start_line, start_col, end_line, end_col = node:range()
+          table.insert(vim.b[bufnr].brace_pairs, {
+            open = { linenr = start_line, col = start_col },
+            close = { linenr = end_line, col = end_col }
+          })
+        end
+        for child in node:iter_children() do
+          traverse(child)
         end
       end
 
-      for _, pair in ipairs(brace_pairs) do
+      traverse(root)
+
+      -- Conceal the braces
+      for _, pair in ipairs(vim.b[bufnr].brace_pairs) do
         vim.api.nvim_buf_set_extmark(bufnr, ns_id, pair.open.linenr, pair.open.col, {
           end_col = pair.open.col + 1,
           conceal = "",
@@ -83,10 +78,6 @@ M.setup = function(opts)
           hl_group = hl_group,
         })
       end
-
-      -- Save brace pairs in the buffer for later use
-      vim.b[bufnr].brace_pairs = brace_pairs
-      print("Brace pairs saved:", vim.inspect(brace_pairs))
     end
   end
 
