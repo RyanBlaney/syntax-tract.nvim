@@ -1,4 +1,5 @@
 
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -28,10 +29,16 @@ M.setup = function(opts)
         -- Use Lua's pattern matching to find the word
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
+          -- Remove any existing extmarks in the range
+          local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns_id, {linenr-1, start_pos-1}, {linenr-1, end_pos}, {})
+          for _, mark in ipairs(marks) do
+            vim.api.nvim_buf_del_extmark(bufnr, ns_id, mark[1])
+          end
+          -- Add a new extmark with virtual text
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_pos,
-            conceal = symbol,
-            hl_group = hl_group,
+            virt_text = {{symbol, hl_group}},
+            virt_text_pos = 'overlay',
           })
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
         end
@@ -78,13 +85,13 @@ M.setup = function(opts)
     for _, pair in ipairs(brace_pairs) do
       vim.api.nvim_buf_set_extmark(bufnr, ns_id, pair.open.linenr, pair.open.col, {
         end_col = pair.open.col + 1,
-        conceal = "",
-        hl_group = hl_group,
+        virt_text = {{"", hl_group}},
+        virt_text_pos = 'overlay',
       })
       vim.api.nvim_buf_set_extmark(bufnr, ns_id, pair.close.linenr, pair.close.col, {
         end_col = pair.close.col + 1,
-        conceal = "",
-        hl_group = hl_group,
+        virt_text = {{"", hl_group}},
+        virt_text_pos = 'overlay',
       })
     end
 
