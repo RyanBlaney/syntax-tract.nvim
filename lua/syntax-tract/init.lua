@@ -48,12 +48,12 @@ M.setup = function(opts)
           if not start_pos then break end
           local brace_char = line:sub(start_pos, start_pos)
           if brace_char == "{" then
-            table.insert(brace_stack, { linenr = linenr - 1, col = start_pos - 1 })
+            table.insert(brace_stack, { linenr = linenr, col = start_pos })
           elseif brace_char == "}" and #brace_stack > 0 then
             local open_brace = table.remove(brace_stack)
             table.insert(brace_pairs, {
               open = open_brace,
-              close = { linenr = linenr - 1, col = start_pos - 1 }
+              close = { linenr = linenr, col = start_pos }
             })
           end
           pos = end_pos + 1
