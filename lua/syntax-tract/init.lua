@@ -115,7 +115,8 @@ M.setup = function(opts)
     vim.cmd(string.format([[
       augroup SyntaxTract_%s
         autocmd!
-        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words_and_braces(0, '%s')
+        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words(0, '%s')
+        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_braces(0, '%s')
         autocmd CursorMoved *.%s lua require('syntax-tract').handle_cursor_moved(0, vim.fn.line('.') - 1)
       augroup END
     ]], lang, lang, lang, lang))
