@@ -47,7 +47,7 @@ M.setup = function(opts)
     end
 
     -- Find and conceal braces
-    if lang_opts.hideBraces then
+    if lang_opts.hide_braces then
       for linenr, line in ipairs(lines) do
         local pos = 1
         local indentation = #line:match("^%s*") -- Calculate indentation level
