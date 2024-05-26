@@ -1,3 +1,4 @@
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -11,8 +12,8 @@ M.setup = function(opts)
     vim.cmd(string.format("highlight SyntaxTractConcealed_%s ctermfg=LightRed guifg=%s", lang, lang_opts.color))
   end
 
-  -- Function to conceal words
-  M.conceal_words = function(bufnr, lang)
+  -- Function to conceal words and braces
+  M.conceal_words_and_braces = function(bufnr, lang)
     local lang_opts = M.opts.languages[lang]
     if not lang_opts or not lang_opts.words then
       return
@@ -20,6 +21,10 @@ M.setup = function(opts)
     local ns_id = vim.api.nvim_create_namespace("syntax_tract")
     local hl_group = "SyntaxTractConcealed_" .. lang
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    local brace_stack = {}
+    local brace_pairs = {}
+
+    -- Conceal words
     for linenr, line in ipairs(lines) do
       for word, symbol in pairs(lang_opts.words) do
         -- Escape special characters
@@ -27,7 +32,7 @@ M.setup = function(opts)
         -- Use Lua's pattern matching to find the word
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
-          vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
+          vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
             end_col = end_pos,
             conceal = symbol,
             hl_group = hl_group,
@@ -37,10 +42,8 @@ M.setup = function(opts)
       end
     end
 
-    local brace_stack = {}
-    local brace_pairs = {}
-
-    if lang_opts.hide_braces then
+    -- Find and conceal braces
+    if lang_opts.hideBraces then
       for linenr, line in ipairs(lines) do
         local pos = 1
         while pos <= #line do
@@ -76,11 +79,10 @@ M.setup = function(opts)
       -- Save brace pairs in the buffer for later use
       vim.b[bufnr].brace_pairs = brace_pairs
     end
-
   end
 
-  -- Function to remove concealment on the current line
-  M.reveal_line = function(bufnr, line_nr)
+  -- Function to remove concealment on the current line and within brace scopes
+  M.reveal_line_and_braces = function(bufnr, line_nr)
     local ns_id = vim.api.nvim_create_namespace("syntax_tract")
     vim.api.nvim_buf_clear_namespace(bufnr, ns_id, line_nr, line_nr + 1)
 
@@ -99,12 +101,13 @@ M.setup = function(opts)
     vim.cmd(string.format([[
       augroup SyntaxTract_%s
         autocmd!
-        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words(0, '%s')
-        autocmd CursorMoved *.%s lua require('syntax-tract').reveal_line(0, vim.fn.line('.') - 1)
-        autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words(0, '%s')
+        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words_and_braces(0, '%s')
+        autocmd CursorMoved *.%s lua require('syntax-tract').reveal_line_and_braces(0, vim.fn.line('.') - 1)
+        autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words_and_braces(0, '%s')
       augroup END
     ]], lang, lang, lang, lang, lang, lang))
   end
 end
 
 return M
+
