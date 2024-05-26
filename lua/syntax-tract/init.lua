@@ -92,7 +92,7 @@ M.setup = function(opts)
     local brace_pairs = vim.b[bufnr].brace_pairs or {}
     print(string.format("Revealing line %d, brace_pairs count: %d", line_nr, #brace_pairs))
     for _, pair in ipairs(brace_pairs) do
-      if (line_nr >= pair.open.linenr + 1 and line_nr <= pair.close.linenr + 1) then
+      if (line_nr >= pair.open.linenr - 1 and line_nr <= pair.close.linenr - 1) then
         print(string.format("Revealing brace pair: open(%d, %d), close(%d, %d)",
           pair.open.linenr, pair.open.col, pair.close.linenr, pair.close.col))
         vim.api.nvim_buf_clear_namespace(bufnr, ns_id, pair.open.linenr, pair.open.linenr + 1)
