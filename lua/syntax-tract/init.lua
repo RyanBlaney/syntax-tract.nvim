@@ -1,4 +1,3 @@
-
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -44,9 +43,10 @@ M.setup = function(opts)
       end
     end
 
-    -- Use Treesitter to find brace pairs
+    -- Use nvim-treesitter to find brace pairs
     if lang_opts.hide_braces then
-      local parser = vim.treesitter.get_parser(bufnr, lang)
+      local ts_utils = require('nvim-treesitter.ts_utils')
+      local parser = ts_utils.get_parser(bufnr, lang)
       local tree = parser:parse()[1]
       local root = tree:root()
 
