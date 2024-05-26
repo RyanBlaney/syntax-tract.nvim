@@ -107,7 +107,7 @@ M.setup = function(opts)
   -- Function to handle CursorMoved event
   M.handle_cursor_moved = function(bufnr, line_nr)
     M.reveal_braces(bufnr, line_nr)
-    M.conceal_words(bufnr, vim.bo[bufnr].filetype)
+    -- M.conceal_words(bufnr, vim.bo[bufnr].filetype)
   end
 
   -- Setup autocommands for each language
