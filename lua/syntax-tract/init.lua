@@ -36,12 +36,62 @@ M.setup = function(opts)
         end
       end
     end
+
+    local brace_stack = {}
+    local brace_pairs = {}
+
+    if lang_opts.hide_braces then
+      for linenr, line in ipairs(lines) do
+        local start_pos = 1
+        while start_pos <= #line do
+          local start_pos, end_pos = string.find(line, "[{}]", start_pos)
+          if not start_pos then break end
+          local brace_char = line:sub(start_pos, start_pos)
+          if brace_char == "{" then
+            table.insert(brace_stack, { linenr = linenr - 1, col = start_pos - 1 })
+          elseif brace_char == "}" and #brace_stack > 0 then
+            local open_brace = table.remove(brace_stack)
+            table.insert(brace_pairs, {
+              open = open_brace,
+              close = { linenr = linenr - 1, col = start_pos - 1 }
+            })
+          end
+          start_pos = end_pos + 1
+        end
+      end
+
+      for _, pair in ipairs(brace_pairs) do
+        vim.api.nvim_buf_set_extmark(bufnr, ns_id, pair.open.linenr, pair.open.col, {
+          end_col = pair.open.col + 1,
+          conceal = "",
+          hl_group = hl_group,
+        })
+        vim.api.nvim_buf_set_extmark(bufnr, ns_id, pair.close.linenr, pair.close.col, {
+          end_col = pair.close.col + 1,
+          conceal = "",
+          hl_group = hl_group,
+        })
+      end
+
+      -- Save brace pairs in the buffer for later use
+      vim.b[bufnr].brace_pairs = brace_pairs
+    end
+
   end
 
   -- Function to remove concealment on the current line
   M.reveal_line = function(bufnr, line_nr)
     local ns_id = vim.api.nvim_create_namespace("syntax_tract")
     vim.api.nvim_buf_clear_namespace(bufnr, ns_id, line_nr, line_nr + 1)
+
+    -- Reveal scopes
+    local brace_pairs = vim.b[bufnr].brace_pairs or {}
+    for _, pair in ipairs(brace_pairs) do
+      if (line_nr >= pair.open.linenr and line_nr <= pair.close.linenr) or line_nr == pair.open.linenr then
+        vim.api.nvim_buf_clear_namespace(bufnr, ns_id, pair.open.linenr, pair.open.linenr + 1)
+        vim.api.nvim_buf_clear_namespace(bufnr, ns_id, pair.close.linenr, pair.close.linenr + 1)
+      end
+    end
   end
 
   -- Setup autocommands for each language

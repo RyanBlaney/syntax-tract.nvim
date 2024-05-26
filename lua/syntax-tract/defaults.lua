@@ -53,6 +53,7 @@ M.defaults = {
         ["return"] = "⟽",
       },
       color = "#ff8a8a",
+      hide_braces = true,
     },
   }
 }
