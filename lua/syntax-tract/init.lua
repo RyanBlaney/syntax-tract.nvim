@@ -42,18 +42,18 @@ M.setup = function(opts)
 
     if lang_opts.hide_braces then
       for linenr, line in ipairs(lines) do
-        local pos = 1
+        local pos = 0
         while pos <= #line do
           local start_pos, end_pos = string.find(line, "[{}]", pos)
           if not start_pos then break end
           local brace_char = line:sub(start_pos, start_pos)
           if brace_char == "{" then
-            table.insert(brace_stack, { linenr = linenr, col = start_pos })
+            table.insert(brace_stack, { linenr = linenr - 1, col = start_pos - 1 })
           elseif brace_char == "}" and #brace_stack > 0 then
             local open_brace = table.remove(brace_stack)
             table.insert(brace_pairs, {
               open = open_brace,
-              close = { linenr = linenr, col = start_pos }
+              close = { linenr = linenr - 1, col = start_pos - 1 }
             })
           end
           pos = end_pos + 1
