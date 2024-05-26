@@ -42,19 +42,23 @@ M.setup = function(opts)
 
     if lang_opts.hide_braces then
       for linenr, line in ipairs(lines) do
-        local pos = 0
+        local pos = 1
+        local indentation = #line:match("^%s*") -- Calculate indentation level
         while pos <= #line do
           local start_pos, end_pos = string.find(line, "[{}]", pos)
           if not start_pos then break end
           local brace_char = line:sub(start_pos, start_pos)
           if brace_char == "{" then
-            table.insert(brace_stack, { linenr = linenr - 1, col = start_pos - 1 })
+            table.insert(brace_stack, { linenr = linenr - 1, col = start_pos - 1, indent = indentation })
           elseif brace_char == "}" and #brace_stack > 0 then
-            local open_brace = table.remove(brace_stack)
-            table.insert(brace_pairs, {
-              open = open_brace,
-              close = { linenr = linenr - 1, col = start_pos - 1 }
-            })
+            local open_brace = brace_stack[#brace_stack]
+            if open_brace.indent == indentation then
+              table.remove(brace_stack)
+              table.insert(brace_pairs, {
+                open = open_brace,
+                close = { linenr = linenr - 1, col = start_pos - 1 }
+              })
+            end
           end
           pos = end_pos + 1
         end
