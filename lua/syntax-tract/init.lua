@@ -61,8 +61,6 @@ M.setup = function(opts)
       end
 
       for _, pair in ipairs(brace_pairs) do
-        print(string.format("Brace pair: open(%d, %d), close(%d, %d)",
-          pair.open.linenr, pair.open.col, pair.close.linenr, pair.close.col))
         vim.api.nvim_buf_set_extmark(bufnr, ns_id, pair.open.linenr, pair.open.col, {
           end_col = pair.open.col + 1,
           conceal = "",
