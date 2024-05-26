@@ -85,7 +85,7 @@ M.setup = function(opts)
     vim.api.nvim_buf_clear_namespace(bufnr, ns_id, line_nr, line_nr + 1)
 
     -- Reveal scopes
-    local brace_pairs = vim.b[bufnr].brace_pairs or {}
+    local brace_pairs = vim.b[bufnr].brace_pairs
     for _, pair in ipairs(brace_pairs) do
       if (line_nr >= pair.open.linenr and line_nr <= pair.close.linenr) then
         vim.api.nvim_buf_clear_namespace(bufnr, ns_id, pair.open.linenr, pair.open.linenr + 1)
