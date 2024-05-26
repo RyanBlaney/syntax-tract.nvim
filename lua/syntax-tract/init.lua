@@ -51,11 +51,11 @@ M.setup = function(opts)
       local root = tree:root()
 
       local function traverse(node)
-        if node:type() == "block" then
+        if node:type() == "compound_statement" then
           local start_line, start_col, end_line, end_col = node:range()
           table.insert(vim.b[bufnr].brace_pairs, {
             open = { linenr = start_line, col = start_col },
-            close = { linenr = end_line, col = end_col }
+            close = { linenr = end_line, col = end_col - 1 } -- Adjust end_col to point to the closing brace
           })
         end
         for child in node:iter_children() do
