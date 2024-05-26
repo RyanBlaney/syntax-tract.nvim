@@ -1,3 +1,4 @@
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -11,8 +12,8 @@ M.setup = function(opts)
     vim.cmd(string.format("highlight SyntaxTractConcealed_%s ctermfg=LightRed guifg=%s", lang, lang_opts.color))
   end
 
-  -- Function to conceal words
-  M.conceal_words = function(bufnr, lang)
+  -- Function to conceal words and braces
+  M.conceal_words_and_braces = function(bufnr, lang)
     local lang_opts = M.opts.languages[lang]
     if not lang_opts or not lang_opts.words then
       return
@@ -20,6 +21,14 @@ M.setup = function(opts)
     local ns_id = vim.api.nvim_create_namespace("syntax_tract")
     local hl_group = "SyntaxTractConcealed_" .. lang
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    local brace_stack = {}
+    local brace_pairs = {}
+
+    -- Clear any existing extmarks and brace pairs
+    vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
+    vim.b[bufnr].brace_pairs = {}
+
+    -- Conceal words
     for linenr, line in ipairs(lines) do
       for word, symbol in pairs(lang_opts.words) do
         -- Escape special characters
@@ -37,10 +46,8 @@ M.setup = function(opts)
       end
     end
 
-    local brace_stack = {}
-    local brace_pairs = {}
-
-    if lang_opts.hide_braces then
+    -- Find and conceal braces
+    if lang_opts.hideBraces then
       for linenr, line in ipairs(lines) do
         local pos = 1
         local indentation = #line:match("^%s*") -- Calculate indentation level
@@ -80,23 +87,19 @@ M.setup = function(opts)
       -- Save brace pairs in the buffer for later use
       vim.b[bufnr].brace_pairs = brace_pairs
     end
-
   end
 
-  -- Function to remove concealment on the current line
-  M.reveal_line = function(bufnr, line_nr)
+  -- Function to remove concealment on the current line and within brace scopes
+  M.reveal_line_and_braces = function(bufnr, line_nr)
     local ns_id = vim.api.nvim_create_namespace("syntax_tract")
     vim.api.nvim_buf_clear_namespace(bufnr, ns_id, line_nr, line_nr + 1)
 
     -- Reveal scopes
     local brace_pairs = vim.b[bufnr].brace_pairs or {}
-    print(string.format("Revealing line %d, brace_pairs count: %d", line_nr, #brace_pairs))
     for _, pair in ipairs(brace_pairs) do
       if (line_nr >= pair.open.linenr and line_nr <= pair.close.linenr) then
-        print(string.format("Revealing brace pair: open(%d, %d), close(%d, %d)",
-          pair.open.linenr, pair.open.col, pair.close.linenr, pair.close.col))
-        vim.api.nvim_buf_clear_namespace(bufnr, ns_id, pair.open.linenr + 1, pair.open.linenr + 2)
-        vim.api.nvim_buf_clear_namespace(bufnr, ns_id, pair.close.linenr + 1, pair.close.linenr + 2)
+        vim.api.nvim_buf_clear_namespace(bufnr, ns_id, pair.open.linenr, pair.open.linenr + 1)
+        vim.api.nvim_buf_clear_namespace(bufnr, ns_id, pair.close.linenr, pair.close.linenr + 1)
       end
     end
   end
@@ -106,12 +109,13 @@ M.setup = function(opts)
     vim.cmd(string.format([[
       augroup SyntaxTract_%s
         autocmd!
-        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words(0, '%s')
-        autocmd CursorMoved *.%s lua require('syntax-tract').reveal_line(0, vim.fn.line('.') - 1)
-        autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words(0, '%s')
+        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words_and_braces(0, '%s')
+        autocmd CursorMoved *.%s lua require('syntax-tract').reveal_line_and_braces(0, vim.fn.line('.') - 1)
+        autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words_and_braces(0, '%s')
       augroup END
     ]], lang, lang, lang, lang, lang, lang))
   end
 end
 
 return M
+
