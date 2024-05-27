@@ -1,5 +1,3 @@
-
-
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -29,12 +27,10 @@ M.setup = function(opts)
         -- Use Lua's pattern matching to find the word
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
-          -- Add a new extmark with virtual text
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_pos,
-            virt_text = {{symbol, hl_group}},
-            virt_text_pos = 'overlay',
-            hl_mode = 'combine',
+            conceal = symbol,
+            hl_group = hl_group,
           })
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
         end
@@ -57,18 +53,22 @@ M.setup = function(opts)
 
     for linenr, line in ipairs(lines) do
       local pos = 1
+      local indentation = #line:match("^%s*") -- Calculate indentation level
       while pos <= #line do
         local start_pos, end_pos = string.find(line, "[{}]", pos)
         if not start_pos then break end
         local brace_char = line:sub(start_pos, start_pos)
         if brace_char == "{" then
-          table.insert(brace_stack, { linenr = linenr - 1, col = start_pos - 1 })
+          table.insert(brace_stack, { linenr = linenr - 1, col = start_pos - 1, indent = indentation })
         elseif brace_char == "}" and #brace_stack > 0 then
-          local open_brace = table.remove(brace_stack)
-          table.insert(brace_pairs, {
-            open = open_brace,
-            close = { linenr = linenr - 1, col = start_pos - 1 }
-          })
+          local open_brace = brace_stack[#brace_stack]
+          if open_brace.indent == indentation then
+            table.remove(brace_stack)
+            table.insert(brace_pairs, {
+              open = open_brace,
+              close = { linenr = linenr - 1, col = start_pos - 1 }
+            })
+          end
         end
         pos = end_pos + 1
       end
@@ -77,15 +77,13 @@ M.setup = function(opts)
     for _, pair in ipairs(brace_pairs) do
       vim.api.nvim_buf_set_extmark(bufnr, ns_id, pair.open.linenr, pair.open.col, {
         end_col = pair.open.col + 1,
-        virt_text = {{"{", hl_group}},
-        virt_text_pos = 'overlay',
-        hl_mode = 'combine',
+        conceal = "",
+        hl_group = hl_group,
       })
       vim.api.nvim_buf_set_extmark(bufnr, ns_id, pair.close.linenr, pair.close.col, {
         end_col = pair.close.col + 1,
-        virt_text = {{"}", hl_group}},
-        virt_text_pos = 'overlay',
-        hl_mode = 'combine',
+        conceal = "",
+        hl_group = hl_group,
       })
     end
 
@@ -108,7 +106,8 @@ M.setup = function(opts)
   -- Function to handle CursorMoved event
   M.handle_cursor_moved = function(bufnr)
     local line_nr = vim.fn.line('.') - 1
-    M.conceal_braces(bufnr, line_nr)
+    M.conceal_words(bufnr, vim.bo[bufnr].filetype)
+    M.conceal_braces(bufnr, vim.bo[bufnr].filetype)
     M.reveal_braces(bufnr, line_nr)
   end
 
@@ -117,12 +116,11 @@ M.setup = function(opts)
     vim.cmd(string.format([[
       augroup SyntaxTract_%s
         autocmd!
-        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words(%d, '%s')
-        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_braces(%d, '%s')
-        autocmd CursorMoved *.%s lua require('syntax-tract').handle_cursor_moved(%d)
-        autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words(%d, '%s')
+        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words(0, '%s')
+        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_braces(0, '%s')
+        autocmd CursorMoved *.%s lua require('syntax-tract').handle_cursor_moved(0)
       augroup END
-    ]], lang, lang, 0, lang, lang, 0, lang, lang, 0, lang, 0, lang))
+    ]], lang, lang, lang, lang, lang, lang))
   end
 end
 
