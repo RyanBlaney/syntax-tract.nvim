@@ -31,8 +31,8 @@ M.setup = function(opts)
             end_col = end_pos,
             virt_text = {{symbol, hl_group}},
             conceal = "",
-            virt_text_pos = "inline",
-            -- hl_group = hl_group,
+            virt_text_pos = "overlay",
+            hl_group = hl_group,
           })
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
         end
@@ -62,7 +62,7 @@ M.setup = function(opts)
         local brace_char = line:sub(start_pos, start_pos)
         if brace_char == "{" then
           table.insert(brace_stack, { linenr = linenr - 1, col = start_pos - 1, indent = indentation })
-        elseif brace_char == "}" and #brace_stack > 0 then
+        elseif brace_char == "}" and #brace_stack > 1 then
           local open_brace = brace_stack[#brace_stack]
           if open_brace.indent == indentation then
             table.remove(brace_stack)
@@ -105,11 +105,19 @@ M.setup = function(opts)
     end
   end
 
+  M.reveal_words = function(bufnr)
+    local word_ns_id = vim.api.nvim_create_namespace("syntax_tract_words")
+    local word_extmarks = vim.b[bufnr].word_extmarks or {}
+    for _, extmark_id in ipairs(word_extmarks) do
+      vim.api.nvim_buf_del_extmark(bufnr, word_ns_id, extmark_id)
+    end
+  end
+
   -- Function to handle CursorMoved event
   M.handle_cursor_moved = function(bufnr)
     local line_nr = vim.fn.line('.') - 1
 
-    vim.api.nvim_buf_clear_namespace(bufnr, vim.api.nvim_create_namespace("syntax_tract_words"), 0, -1)
+    M.reveal_words(bufnr)
     M.conceal_words(bufnr, vim.bo[bufnr].filetype)
 
     M.conceal_braces(bufnr, vim.bo[bufnr].filetype)
