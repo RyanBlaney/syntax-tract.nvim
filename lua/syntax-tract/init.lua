@@ -37,7 +37,7 @@ M.setup = function(opts)
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
           local symbol_visual_width = get_visual_width(symbol)
-          local end_col = start_pos - 1 + symbol_visual_width
+          local end_col = end_pos - 1 + symbol_visual_width
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_col,
             conceal = "",
