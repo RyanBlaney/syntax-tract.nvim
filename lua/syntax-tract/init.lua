@@ -33,6 +33,7 @@ M.setup = function(opts)
             end_col = end_pos,
             virt_text = {{symbol, hl_group}},
             virt_text_pos = "overlay",
+            conceal = "",
             virt_text_hide = true,
             hl_group = hl_group,
           })
@@ -126,7 +127,7 @@ M.setup = function(opts)
     local line_nr = vim.fn.line('.') - 1
 
     M.conceal_words(bufnr, vim.bo[bufnr].filetype)
-    M.reveal_words(bufnr, lin_nr)
+    M.reveal_words(bufnr, line_nr)
 
     M.conceal_braces(bufnr, vim.bo[bufnr].filetype)
     M.reveal_braces(bufnr, line_nr)
