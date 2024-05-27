@@ -34,7 +34,7 @@ M.setup = function(opts)
             virt_text = {{symbol, hl_group}},
             conceal = "",
             virt_text_pos = "overlay",
-            hl_group = hl_group,
+            -- hl_group = hl_group,
           })
           table.insert(word_extmarks, extmark_id)
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
