@@ -32,11 +32,12 @@ M.setup = function(opts)
         while start_pos do
           local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = start_pos - 1 + #word,
+            virt_text = {{symbol, hl_group}},
             conceal = "",
+            virt_text_pos = "overlay",
             hl_group = hl_group,
           })
           table.insert(word_extmarks, {extmark_id = extmark_id, linenr = linenr - 1, start_pos = start_pos - 1, end_pos = start_pos - 1 + #word})
-          vim.api.nvim_buf_set_text(bufnr, linenr-1, start_pos-1, linenr-1, start_pos-1 + #word, {symbol})
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
         end
       end
@@ -112,7 +113,7 @@ M.setup = function(opts)
   end
 
   -- Function to reveal words
-   M.reveal_words = function(bufnr, line_nr)
+  M.reveal_words = function(bufnr, line_nr)
     local ns_id = vim.api.nvim_create_namespace("syntax_tract_words")
     vim.api.nvim_buf_clear_namespace(bufnr, ns_id, line_nr, line_nr + 1)
   end
