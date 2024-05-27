@@ -12,6 +12,14 @@ M.setup = function(opts)
     vim.cmd(string.format("highlight SyntaxTractConcealed_%s ctermfg=LightRed guifg=%s", lang, lang_opts.color))
   end
 
+  local function get_visual_width(str)
+    local visual_width = 0
+    for _ in string.gmatch(str, ".[\128-\191]*") do
+      visual_width = visual_width + 1
+    end
+    return visual_width
+  end
+
   -- Function to conceal words
   M.conceal_words = function(bufnr, lang)
     local lang_opts = M.opts.languages[lang]
@@ -25,12 +33,20 @@ M.setup = function(opts)
       for word, symbol in pairs(lang_opts.words) do
         -- Escape special characters
         local escaped_word = word:gsub("([.*+?^$()%%{}|[\\]])", "%%%1")
-        -- Use Lua's pattern matching to find the word
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
+          local symbol_length = get_visual_width(symbol)
+          local end_col = end_pos
+          if symbol_length > 1 then
+            end_col = start_pos + symbol_length
+          else
+            end_col = end_pos
+          end
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
-            end_col = end_pos,
-            conceal = symbol,
+            end_col = end_col,
+            conceal = "",
+            virt_text = {{symbol, hl_group}},
+            virt_text_pos = "overlay",
             hl_group = hl_group,
           })
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
@@ -107,7 +123,10 @@ M.setup = function(opts)
   -- Function to handle CursorMoved event
   M.handle_cursor_moved = function(bufnr)
     local line_nr = vim.fn.line('.') - 1
+
     M.conceal_words(bufnr, vim.bo[bufnr].filetype)
+    vim.api.nvim_buf_clear_namespace(bufnr, vim.api.nvim_create_namespace("syntax_tract_words"), line_nr, line_nr + 1)
+
     M.conceal_braces(bufnr, vim.bo[bufnr].filetype)
     M.reveal_braces(bufnr, line_nr)
   end
