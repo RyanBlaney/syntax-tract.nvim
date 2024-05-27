@@ -17,7 +17,7 @@ M.setup = function(opts)
     for _ in string.gmatch(str, ".[\128-\191]*") do
       visual_width = visual_width + 1
     end
-    return visual_width
+    return visual_width + 1
   end
 
   -- Function to conceal words
@@ -37,7 +37,7 @@ M.setup = function(opts)
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
           local symbol_visual_width = get_visual_width(symbol)
-          local end_col = start_pos - 2 + symbol_visual_width
+          local end_col = start_pos - 1 + symbol_visual_width
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_col,
             conceal = "",
