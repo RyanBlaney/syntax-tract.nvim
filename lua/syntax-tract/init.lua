@@ -12,13 +12,13 @@ M.setup = function(opts)
     vim.cmd(string.format("highlight SyntaxTractConcealed_%s ctermfg=LightRed guifg=%s", lang, lang_opts.color))
   end
 
-  local function get_visual_width(str)
-    local visual_width = 0
-    for _ in string.gmatch(str, ".[\128-\191]*") do
-      visual_width = visual_width + 1
-    end
-    return visual_width
-  end
+  -- local function get_visual_width(str)
+  --   local visual_width = 0
+  --   for _ in string.gmatch(str, ".[\128-\191]*") do
+  --     visual_width = visual_width + 1
+  --   end
+  --   return visual_width
+  -- end
 
   -- Function to conceal words
   M.conceal_words = function(bufnr, lang)
@@ -36,8 +36,14 @@ M.setup = function(opts)
         -- Use Lua's pattern matching to find the word
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
-          local symbol_visual_width = get_visual_width(symbol)
-          local end_col = end_pos - 1 + symbol_visual_width
+          -- local symbol_visual_width = get_visual_width(symbol)
+          local symbol_length = string.len(symbol)
+          local end_col = end_pos
+          if symbol_length > 1 then
+            end_col = start_pos - 1 + symbol_length
+          else
+            end_col = end_pos
+          end
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_col,
             conceal = "",
