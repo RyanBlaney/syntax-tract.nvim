@@ -33,9 +33,10 @@ M.setup = function(opts)
             end_col = end_pos,
             virt_text = {{symbol, hl_group}},
             virt_text_pos = "overlay",
+            virt_text_hide = true,
             hl_group = hl_group,
           })
-          table.insert(word_extmarks, {extmark_id = extmark_id, start_pos = start_pos - 1, end_pos = end_pos})
+          table.insert(word_extmarks, {extmark_id = extmark_id, linenr = linenr - 1, start_pos = start_pos - 1, end_pos = end_pos})
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
         end
       end
@@ -110,11 +111,13 @@ M.setup = function(opts)
     end
   end
 
-  M.reveal_words = function(bufnr)
-    local word_ns_id = vim.api.nvim_create_namespace("syntax_tract_words")
+  M.reveal_words = function(bufnr, line_nr)
+    local ns_id = vim.api.nvim_create_namespace("syntax_tract_words")
     local word_extmarks = vim.b[bufnr].word_extmarks or {}
     for _, mark in ipairs(word_extmarks) do
-      vim.api.nvim_buf_del_extmark(bufnr, word_ns_id, mark.extmark_id)
+      if line_nr == mark.linenr then
+        vim.api.nvim_buf_del_extmark(bufnr, ns_id, mark.extmark_id)
+      end
     end
   end
 
@@ -122,8 +125,8 @@ M.setup = function(opts)
   M.handle_cursor_moved = function(bufnr)
     local line_nr = vim.fn.line('.') - 1
 
-    M.reveal_words(bufnr)
     M.conceal_words(bufnr, vim.bo[bufnr].filetype)
+    M.reveal_words(bufnr, lin_nr)
 
     M.conceal_braces(bufnr, vim.bo[bufnr].filetype)
     M.reveal_braces(bufnr, line_nr)
