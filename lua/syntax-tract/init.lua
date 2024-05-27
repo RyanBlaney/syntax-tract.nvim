@@ -1,4 +1,5 @@
 
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -107,6 +108,9 @@ M.setup = function(opts)
   -- Function to handle CursorMoved event
   M.handle_cursor_moved = function(bufnr)
     local line_nr = vim.fn.line('.') - 1
+    M.conceal_words(bufnr, line_nr)
+    M.reveal_words(bufnr, line_nr)
+    M.conceal_braces(bufnr, line_nr)
     M.reveal_braces(bufnr, line_nr)
   end
 
@@ -118,7 +122,6 @@ M.setup = function(opts)
         autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words(%d, '%s')
         autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_braces(%d, '%s')
         autocmd CursorMoved *.%s lua require('syntax-tract').handle_cursor_moved(%d)
-        autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words(%d, '%s')
       augroup END
     ]], lang, lang, 0, lang, lang, 0, lang, lang, 0, lang, 0, lang))
   end
