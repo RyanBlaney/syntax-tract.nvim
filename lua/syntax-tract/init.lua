@@ -112,21 +112,16 @@ M.setup = function(opts)
   end
 
   -- Function to reveal words
-  M.reveal_words = function(bufnr, line_nr)
+   M.reveal_words = function(bufnr, line_nr)
     local ns_id = vim.api.nvim_create_namespace("syntax_tract_words")
-    local word_extmarks = vim.b[bufnr].word_extmarks or {}
-    for _, mark in ipairs(word_extmarks) do
-      if line_nr == mark.linenr then
-        vim.api.nvim_buf_del_extmark(bufnr, ns_id, mark.extmark_id)
-      end
-    end
+    vim.api.nvim_buf_clear_namespace(bufnr, ns_id, line_nr, line_nr + 1)
   end
 
   -- Function to handle CursorMoved event
   M.handle_cursor_moved = function(bufnr)
     local line_nr = vim.fn.line('.') - 1
-    M.conceal_words(bufnr, vim.bo[bufnr].filetype)
     M.reveal_words(bufnr, line_nr)
+    M.conceal_words(bufnr, vim.bo[bufnr].filetype)
     M.conceal_braces(bufnr, vim.bo[bufnr].filetype)
     M.reveal_braces(bufnr, line_nr)
   end
