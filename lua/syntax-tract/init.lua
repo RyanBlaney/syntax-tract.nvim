@@ -32,10 +32,11 @@ M.setup = function(opts)
         while start_pos do
           local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = start_pos - 1 + #word,
-            conceal = symbol,
+            conceal = "",
             hl_group = hl_group,
           })
           table.insert(word_extmarks, {extmark_id = extmark_id, linenr = linenr - 1, start_pos = start_pos - 1, end_pos = start_pos - 1 + #word})
+          vim.api.nvim_buf_set_text(bufnr, linenr-1, start_pos-1, linenr-1, start_pos-1 + #word, {symbol})
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
         end
       end
