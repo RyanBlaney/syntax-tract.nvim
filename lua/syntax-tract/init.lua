@@ -32,6 +32,8 @@ M.setup = function(opts)
           local end_col = end_pos
           if symbol_length > 1 then
             end_col = start_pos - 1 + symbol_length
+          else
+            end_col = end_pos
           end
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_col,
