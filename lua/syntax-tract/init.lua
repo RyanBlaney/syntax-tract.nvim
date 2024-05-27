@@ -30,7 +30,7 @@ M.setup = function(opts)
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_pos,
             virt_text = {{symbol, hl_group}},
-            virt_text_hide = true,
+            conceal = "",
             hl_group = hl_group,
           })
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
