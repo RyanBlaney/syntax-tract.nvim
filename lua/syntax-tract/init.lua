@@ -30,10 +30,9 @@ M.setup = function(opts)
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_pos,
             virt_text = {{symbol, hl_group}},
-            conceal = "",
+            -- conceal = "",
             virt_text_pos = "overlay",
-            virt_text_hide = true,
-            hl_group = hl_group,
+            -- hl_group = hl_group,
           })
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
         end
@@ -109,6 +108,9 @@ M.setup = function(opts)
   -- Function to handle CursorMoved event
   M.handle_cursor_moved = function(bufnr)
     local line_nr = vim.fn.line('.') - 1
+
+    vim.api.nvim_buf_clear_namespace(bufnr, vim.api.nvim_create_namespace("syntax_tract_words"), 0, -1)
+
     M.conceal_words(bufnr, vim.bo[bufnr].filetype)
     M.conceal_braces(bufnr, vim.bo[bufnr].filetype)
     M.reveal_braces(bufnr, line_nr)
