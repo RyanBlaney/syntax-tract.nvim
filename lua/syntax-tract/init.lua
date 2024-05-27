@@ -17,7 +17,7 @@ M.setup = function(opts)
     for _ in string.gmatch(str, ".[\128-\191]*") do
       visual_width = visual_width + 1
     end
-    return visual_width + 1
+    return visual_width
   end
 
   -- Function to conceal words
