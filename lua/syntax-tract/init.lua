@@ -1,5 +1,4 @@
 
-
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -116,12 +115,12 @@ M.setup = function(opts)
     vim.cmd(string.format([[
       augroup SyntaxTract_%s
         autocmd!
-        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words(0, '%s')
-        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_braces(0, '%s')
-        autocmd CursorMoved *.%s lua require('syntax-tract').handle_cursor_moved(0)
-        autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words(0, '%s')
+        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words(%d, '%s')
+        autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_braces(%d, '%s')
+        autocmd CursorMoved *.%s lua require('syntax-tract').handle_cursor_moved(%d)
+        autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words(%d, '%s')
       augroup END
-    ]], lang, lang, lang, lang, lang, lang, lang))
+    ]], lang, lang, 0, lang, lang, 0, lang, lang, 0, lang, 0, lang))
   end
 end
 
