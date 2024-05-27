@@ -1,3 +1,4 @@
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -12,7 +13,7 @@ M.setup = function(opts)
   end
 
   -- Function to conceal words
- M.conceal_words = function(bufnr, lang)
+  M.conceal_words = function(bufnr, lang)
     local lang_opts = M.opts.languages[lang]
     if not lang_opts or not lang_opts.words then
       return
@@ -30,14 +31,11 @@ M.setup = function(opts)
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
           local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
-            end_col = end_pos,
-            virt_text = {{symbol, hl_group}},
-            virt_text_pos = "overlay",
-            conceal = "",
-            virt_text_hide = true,
+            end_col = start_pos - 1 + #word,
+            conceal = symbol,
             hl_group = hl_group,
           })
-          table.insert(word_extmarks, {extmark_id = extmark_id, linenr = linenr - 1, start_pos = start_pos - 1, end_pos = end_pos})
+          table.insert(word_extmarks, {extmark_id = extmark_id, linenr = linenr - 1, start_pos = start_pos - 1, end_pos = start_pos - 1 + #word})
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
         end
       end
@@ -112,6 +110,7 @@ M.setup = function(opts)
     end
   end
 
+  -- Function to reveal words
   M.reveal_words = function(bufnr, line_nr)
     local ns_id = vim.api.nvim_create_namespace("syntax_tract_words")
     local word_extmarks = vim.b[bufnr].word_extmarks or {}
@@ -125,10 +124,8 @@ M.setup = function(opts)
   -- Function to handle CursorMoved event
   M.handle_cursor_moved = function(bufnr)
     local line_nr = vim.fn.line('.') - 1
-
-    M.conceal_words(bufnr, vim.bo[bufnr].filetype)
     M.reveal_words(bufnr, line_nr)
-
+    M.conceal_words(bufnr, vim.bo[bufnr].filetype)
     M.conceal_braces(bufnr, vim.bo[bufnr].filetype)
     M.reveal_braces(bufnr, line_nr)
   end
