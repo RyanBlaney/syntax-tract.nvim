@@ -31,7 +31,7 @@ M.setup = function(opts)
             end_col = end_pos,
             virt_text = {{symbol, hl_group}},
             conceal = "",
-            virt_text_pos = "overlay",
+            virt_text_pos = "eol",
             -- hl_group = hl_group,
           })
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
