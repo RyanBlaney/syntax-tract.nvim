@@ -33,13 +33,16 @@ M.setup = function(opts)
       for word, symbol in pairs(lang_opts.words) do
         -- Escape special characters
         local escaped_word = word:gsub("([.*+?^$()%%{}|[\\]])", "%%%1")
+        -- Use Lua's pattern matching to find the word
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
+          -- local symbol_visual_width = get_visual_width(symbol)
           local symbol_length = get_visual_width(symbol)
-          local word_length = end_pos - start_pos + 1
-          local end_col = start_pos - 1 + symbol_length
-          if symbol_length < word_length then
-            end_col = start_pos - 1 + symbol_length + (word_length - symbol_length)
+          local end_col = end_pos
+          if symbol_length > 1 then
+            end_col = start_pos + symbol_length
+          else
+            end_col = end_pos
           end
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_col,
