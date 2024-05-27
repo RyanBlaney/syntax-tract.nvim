@@ -28,8 +28,10 @@ M.setup = function(opts)
         -- Use Lua's pattern matching to find the word
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
+          -- Calculate end_col within the line bounds
+          local end_col = math.min(end_pos - 1 + #symbol, #line)
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
-            end_col = end_pos - 1 + string.len(symbol),
+            end_col = end_col,
             conceal = "",
             virt_text = {{symbol, hl_group}},
             virt_text_pos = "overlay",
