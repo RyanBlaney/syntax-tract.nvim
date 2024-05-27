@@ -21,8 +21,6 @@ M.setup = function(opts)
     local ns_id = vim.api.nvim_create_namespace("syntax_tract_words")
     local hl_group = "SyntaxTractConcealed_" .. lang
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-    local word_extmarks = {}
-
     for linenr, line in ipairs(lines) do
       for word, symbol in pairs(lang_opts.words) do
         -- Escape special characters
@@ -30,21 +28,15 @@ M.setup = function(opts)
         -- Use Lua's pattern matching to find the word
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
-          local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
-            end_col = start_pos - 1 + #word,
-            virt_text = {{symbol, hl_group}},
-            conceal = "",
-            virt_text_pos = "overlay",
+          vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
+            end_col = end_pos,
+            conceal = symbol,
             hl_group = hl_group,
           })
-          table.insert(word_extmarks, {extmark_id = extmark_id, linenr = linenr - 1, start_pos = start_pos - 1, end_pos = start_pos - 1 + #word})
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
         end
       end
     end
-
-    -- Save extmarks in the buffer for later use
-    vim.b[bufnr].word_extmarks = word_extmarks
   end
 
   -- Function to conceal braces
@@ -112,16 +104,9 @@ M.setup = function(opts)
     end
   end
 
-  -- Function to reveal words
-  M.reveal_words = function(bufnr, line_nr)
-    local ns_id = vim.api.nvim_create_namespace("syntax_tract_words")
-    vim.api.nvim_buf_clear_namespace(bufnr, ns_id, line_nr, line_nr + 1)
-  end
-
   -- Function to handle CursorMoved event
   M.handle_cursor_moved = function(bufnr)
     local line_nr = vim.fn.line('.') - 1
-    M.reveal_words(bufnr, line_nr)
     M.conceal_words(bufnr, vim.bo[bufnr].filetype)
     M.conceal_braces(bufnr, vim.bo[bufnr].filetype)
     M.reveal_braces(bufnr, line_nr)
