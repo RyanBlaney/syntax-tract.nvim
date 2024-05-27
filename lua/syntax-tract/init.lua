@@ -109,9 +109,9 @@ M.setup = function(opts)
   M.handle_cursor_moved = function(bufnr)
     local line_nr = vim.fn.line('.') - 1
 
+    M.conceal_words(bufnr, vim.bo[bufnr].filetype)
     vim.api.nvim_buf_clear_namespace(bufnr, vim.api.nvim_create_namespace("syntax_tract_words"), 0, -1)
 
-    M.conceal_words(bufnr, vim.bo[bufnr].filetype)
     M.conceal_braces(bufnr, vim.bo[bufnr].filetype)
     M.reveal_braces(bufnr, line_nr)
   end
