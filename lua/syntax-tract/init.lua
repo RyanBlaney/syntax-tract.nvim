@@ -38,18 +38,20 @@ M.setup = function(opts)
         while start_pos do
           -- local symbol_visual_width = get_visual_width(symbol)
           local symbol_length = get_visual_width(symbol)
-          local end_col = end_pos
-          local virt_text_pos = "overlay"
-          if symbol_length > 1 then
-            end_col = end_pos - start_pos + symbol_length
-          else
-            end_col = end_pos
+          local word_length = get_visual_width(word)
+          local end_col = start_pos - 1 + symbol_length
+
+          -- Generate padding spaces
+          local padding = ""
+          if word_length > symbol_length then
+            padding = string.rep(" ", word_length - symbol_length)
           end
+
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_col,
             conceal = "",
-            virt_text = {{symbol, hl_group}},
-            virt_text_pos = virt_text_pos,
+            virt_text = {{symbol .. padding, hl_group}},
+            virt_text_pos = "overlay",
             hl_group = hl_group,
           })
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
