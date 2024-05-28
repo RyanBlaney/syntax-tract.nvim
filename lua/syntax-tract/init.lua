@@ -39,11 +39,11 @@ M.setup = function(opts)
           -- local symbol_visual_width = get_visual_width(symbol)
           local symbol_length = get_visual_width(symbol)
           local end_col = start_pos - 1 + symbol_length
-          if symbol_length > 1 then
-            end_col = start_pos + symbol_length
-          else
-            end_col = end_pos
-          end
+          -- if symbol_length > 1 then
+          --   end_col = start_pos + symbol_length
+          -- else
+          --   end_col = end_pos
+          -- end
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_col,
             conceal = "",
