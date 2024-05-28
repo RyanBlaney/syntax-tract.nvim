@@ -38,10 +38,9 @@ M.setup = function(opts)
         while start_pos do
           -- local symbol_visual_width = get_visual_width(symbol)
           local symbol_length = get_visual_width(symbol)
-          print(symbol .. " : " .. symbol_length)
           local end_col = end_pos
           if symbol_length > 1 then
-            end_col = start_pos + symbol_length
+            end_col = end_pos - start_pos + symbol_length
           else
             end_col = end_pos
           end
