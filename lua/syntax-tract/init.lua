@@ -48,7 +48,7 @@ M.setup = function(opts)
             end_col = end_col,
             conceal = "",
             virt_text = {{symbol, hl_group}},
-            virt_text_pos = "inline",
+            virt_text_pos = "overlay",
             hl_group = hl_group,
           })
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
