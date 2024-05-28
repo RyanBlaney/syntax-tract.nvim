@@ -39,6 +39,10 @@ M.setup = function(opts)
           -- local symbol_visual_width = get_visual_width(symbol)
           local symbol_length = get_visual_width(symbol)
           local end_col = end_pos
+          local virt_text_pos = "overlay"
+          if string.len(word) < symbol_length then
+            virt_text_pos = "inline"
+          end
           if symbol_length > 1 then
             end_col = end_pos - start_pos + symbol_length
           else
@@ -48,7 +52,7 @@ M.setup = function(opts)
             end_col = end_col,
             conceal = "",
             virt_text = {{symbol, hl_group}},
-            virt_text_pos = "overlay",
+            virt_text_pos = virt_text_pos,
             hl_group = hl_group,
           })
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
