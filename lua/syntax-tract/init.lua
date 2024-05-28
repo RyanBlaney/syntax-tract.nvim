@@ -126,7 +126,7 @@ M.setup = function(opts)
   M.handle_cursor_moved = function(bufnr)
     local line_nr = vim.fn.line('.') - 1
 
-    M.conceal_words(bufnr, vim.bo[bufnr].filetype)
+    -- M.conceal_words(bufnr, vim.bo[bufnr].filetype)
     vim.api.nvim_buf_clear_namespace(bufnr, vim.api.nvim_create_namespace("syntax_tract_words"), line_nr, line_nr + 1)
 
     M.conceal_braces(bufnr, vim.bo[bufnr].filetype)
@@ -140,9 +140,10 @@ M.setup = function(opts)
         autocmd!
         autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words(0, '%s')
         autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_braces(0, '%s')
+        autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words(0, '%s')
         autocmd CursorMoved *.%s lua require('syntax-tract').handle_cursor_moved(0)
       augroup END
-    ]], lang, lang, lang, lang, lang, lang))
+    ]], lang, lang, lang, lang, lang, lang, lang))
   end
 end
 
