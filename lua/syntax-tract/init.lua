@@ -41,7 +41,7 @@ M.setup = function(opts)
           local end_col = end_pos
           local virt_text_pos = "overlay"
           if string.len(word) < symbol_length then
-            virt_text_pos = "inline"
+            virt_text_pos = "right_align"
           end
           if symbol_length > 1 then
             end_col = end_pos - start_pos + symbol_length
