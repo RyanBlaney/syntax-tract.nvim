@@ -44,11 +44,15 @@ M.setup = function(opts)
           else
             end_col = end_pos
           end
+          local padding = ""
+          for i = 0,(word - symbol_length) do
+            padding = padding .. " "
+          end
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_col,
             conceal = "",
-            virt_text = {{symbol, hl_group}},
-            virt_text_pos = "overlay | inline",
+            virt_text = {{symbol .. padding, hl_group}},
+            virt_text_pos = "overlay",
             hl_group = hl_group,
           })
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
