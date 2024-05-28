@@ -143,7 +143,7 @@ M.setup = function(opts)
         autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words(0, '%s')
         autocmd CursorMoved *.%s lua require('syntax-tract').handle_cursor_moved(0)
       augroup END
-    ]], lang, lang, lang, lang, lang, lang))
+    ]], lang, lang, lang, lang, lang, lang, lang, lang))
   end
 end
 
