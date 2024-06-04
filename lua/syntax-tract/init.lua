@@ -1,4 +1,5 @@
 
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -32,6 +33,7 @@ M.setup = function(opts)
     local inline_done = {}
 
     for linenr, line in ipairs(lines) do
+      inline_done[linenr] = false
       for word, symbol in pairs(lang_opts.words) do
         -- Escape special characters
         local escaped_word = word:gsub("([.*+?^$()%%{}|[\\]])", "%%%1")
