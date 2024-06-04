@@ -38,30 +38,30 @@ M.setup = function(opts)
         while start_pos do
           local word_length = get_visual_width(word)
           local symbol_length = get_visual_width(symbol)
-          local padding = ""
-          
-          -- Add padding spaces if the symbol is shorter than the word
-          if symbol_length < word_length then
-            padding = string.rep(" ", word_length - symbol_length)
+          local end_col = end_pos
+
+          -- Adjust end_col to account for symbol length
+          if symbol_length > 1 then
+            end_col = start_pos - 1 + symbol_length
+          else
+            end_col = end_pos
           end
 
-          -- Calculate virtual text with padding
-          local virt_text = symbol .. padding
-
-          vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
+          vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
             end_col = end_pos,
-            conceal = "",
-            virt_text = {{virt_text, hl_group}},
-            virt_text_pos = "eol", -- Use end of line positioning
+            virt_text = {{symbol, hl_group}},
+            virt_text_pos = "overlay",
             hl_group = hl_group,
           })
 
           -- Adjust remaining text position if symbol is longer than the word
           if symbol_length > word_length then
             local remaining_text = line:sub(end_pos + 1)
-            vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, end_pos, {
+            local remaining_start_pos = start_pos - 1 + symbol_length
+            vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
+              end_col = #line,
               virt_text = {{remaining_text, hl_group}},
-              virt_text_pos = "eol",
+              virt_text_pos = "inline",
               hl_group = hl_group,
             })
           end
