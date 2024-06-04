@@ -1,4 +1,5 @@
 
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -38,14 +39,14 @@ M.setup = function(opts)
         while start_pos do
           local word_length = get_visual_width(word)
           local symbol_length = get_visual_width(symbol)
-          local end_col = start_pos - 1 + symbol_length
+          local end_col = start_pos - 1 + word_length
 
           -- Ensure end_col does not exceed line length
           end_col = math.min(end_col, #line)
 
           -- Set the virt_text for the replacement
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
-            end_col = start_pos - 1 + word_length,
+            end_col = end_col,
             conceal = "",
             virt_text = {{symbol, hl_group}},
             virt_text_pos = "overlay",
@@ -58,12 +59,16 @@ M.setup = function(opts)
             local padding_length = symbol_length - word_length
             local padding = string.rep(" ", padding_length)
             local remaining_start_pos = start_pos - 1 + symbol_length
-            vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
-              end_col = remaining_start_pos + #remaining_text,
-              virt_text = {{padding .. remaining_text, hl_group}},
-              virt_text_pos = "inline",
-              hl_group = hl_group,
-            })
+
+            -- Ensure remaining_start_pos does not exceed line length
+            if remaining_start_pos < #line then
+              vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
+                end_col = remaining_start_pos + #remaining_text,
+                virt_text = {{padding .. remaining_text, hl_group}},
+                virt_text_pos = "inline",
+                hl_group = hl_group,
+              })
+            end
           end
 
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
