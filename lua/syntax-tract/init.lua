@@ -1,5 +1,6 @@
 
 
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -63,7 +64,7 @@ M.setup = function(opts)
             -- Ensure remaining_start_pos does not exceed line length
             if remaining_start_pos < #line then
               vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
-                end_col = remaining_start_pos + #remaining_text,
+                end_col = #line,
                 virt_text = {{padding .. remaining_text, hl_group}},
                 virt_text_pos = "inline",
                 hl_group = hl_group,
