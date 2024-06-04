@@ -1,3 +1,4 @@
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -58,7 +59,7 @@ M.setup = function(opts)
 
           if not already_replaced then
             vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
-              end_col = end_col,
+              end_col = start_pos - 1 + word_length,
               conceal = "",
               virt_text = {{symbol, hl_group}},
               virt_text_pos = "overlay",
