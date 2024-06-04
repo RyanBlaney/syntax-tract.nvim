@@ -1,5 +1,3 @@
-
-
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -30,10 +28,10 @@ M.setup = function(opts)
     local ns_id = vim.api.nvim_create_namespace("syntax_tract_words")
     local hl_group = "SyntaxTractConcealed_" .. lang
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-    local inline_done = {}
+    local inline_set = {}
 
     for linenr, line in ipairs(lines) do
-      inline_done[linenr] = false
+      inline_set[linenr] = false
       for word, symbol in pairs(lang_opts.words) do
         -- Escape special characters
         local escaped_word = word:gsub("([.*+?^$()%%{}|[\\]])", "%%%1")
@@ -57,7 +55,7 @@ M.setup = function(opts)
           })
 
           -- Adjust remaining text position if symbol is longer than the word
-          if symbol_length > word_length and not inline_done[linenr] then
+          if symbol_length > word_length and not inline_set[linenr] then
             local remaining_text = line:sub(end_pos + 1)
             local padding_length = symbol_length - word_length
             local padding = string.rep(" ", padding_length)
@@ -71,7 +69,7 @@ M.setup = function(opts)
                 virt_text_pos = "inline",
                 hl_group = hl_group,
               })
-              inline_done[linenr] = true
+              inline_set[linenr] = true
             end
           end
 
