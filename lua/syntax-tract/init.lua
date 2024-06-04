@@ -1,3 +1,4 @@
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -37,24 +38,34 @@ M.setup = function(opts)
         while start_pos do
           local word_length = get_visual_width(word)
           local symbol_length = get_visual_width(symbol)
-          local end_col = start_pos - 1 + symbol_length
+          local padding = ""
           
           -- Add padding spaces if the symbol is shorter than the word
-          local padding = ""
-          if word_length > symbol_length then
+          if symbol_length < word_length then
             padding = string.rep(" ", word_length - symbol_length)
           end
 
-          -- Calculate virtual text to add padding
+          -- Calculate virtual text with padding
           local virt_text = symbol .. padding
 
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
-            end_col = start_pos-1 + word_length,
+            end_col = end_pos,
             conceal = "",
             virt_text = {{virt_text, hl_group}},
-            virt_text_pos = "overlay",
+            virt_text_pos = "eol", -- Use end of line positioning
             hl_group = hl_group,
           })
+
+          -- Adjust remaining text position if symbol is longer than the word
+          if symbol_length > word_length then
+            local remaining_text = line:sub(end_pos + 1)
+            vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, end_pos, {
+              virt_text = {{remaining_text, hl_group}},
+              virt_text_pos = "eol",
+              hl_group = hl_group,
+            })
+          end
+
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
         end
       end
