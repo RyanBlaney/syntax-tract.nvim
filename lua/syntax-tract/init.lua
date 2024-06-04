@@ -1,5 +1,3 @@
-
-
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -48,6 +46,9 @@ M.setup = function(opts)
             end_col = end_pos
           end
 
+          -- Ensure end_col does not exceed line length
+          end_col = math.min(end_col, #line)
+
           -- Check if the symbol is already replaced
           local existing_marks = vim.api.nvim_buf_get_extmarks(bufnr, ns_id, {linenr-1, start_pos-1}, {linenr-1, start_pos-1}, {details = true})
           local already_replaced = false
@@ -74,9 +75,9 @@ M.setup = function(opts)
               local padding = string.rep(" ", padding_length)
               local remaining_start_pos = start_pos - 1 + symbol_length
               vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
-                end_col = remaining_start_pos + #remaining_text,
+                end_col = #line,
                 virt_text = {{remaining_text, hl_group}},
-                virt_text_pos = "overlay",
+                virt_text_pos = "inline",
                 hl_group = hl_group,
               })
             end
