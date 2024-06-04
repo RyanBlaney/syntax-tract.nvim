@@ -1,5 +1,6 @@
 
 
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -42,7 +43,7 @@ M.setup = function(opts)
           local end_col = end_pos
 
           -- Adjust end_col to account for symbol length
-          if symbol_length > 1 then
+          if symbol_length > word_length then
             end_col = start_pos - 1 + symbol_length
           else
             end_col = end_pos
