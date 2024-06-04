@@ -48,24 +48,36 @@ M.setup = function(opts)
             end_col = end_pos
           end
 
-          vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
-            end_col = end_pos,
-            conceal = "",
-            virt_text = {{symbol, hl_group}},
-            virt_text_pos = "overlay",
-            hl_group = hl_group,
-          })
+          -- Check if the symbol is already replaced
+          local existing_marks = vim.api.nvim_buf_get_extmarks(bufnr, ns_id, {linenr-1, start_pos-1}, {linenr-1, start_pos-1}, {details = true})
+          local already_replaced = false
+          for _, mark in ipairs(existing_marks) do
+            if mark[4].virt_text and mark[4].virt_text[1] and mark[4].virt_text[1][1] == symbol then
+              already_replaced = true
+              break
+            end
+          end
 
-          -- Adjust remaining text position if symbol is longer than the word
-          if symbol_length > word_length then
-            local remaining_text = line:sub(end_pos + 1)
-            local remaining_start_pos = start_pos - 1 + symbol_length
-            vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
-              end_col = #line,
-              virt_text = {{remaining_text, hl_group}},
-              virt_text_pos = "inline",
+          if not already_replaced then
+            vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
+              end_col = end_col,
+              conceal = "",
+              virt_text = {{symbol, hl_group}},
+              virt_text_pos = "overlay",
               hl_group = hl_group,
             })
+
+            -- Adjust remaining text position if symbol is longer than the word
+            if symbol_length > word_length then
+              local remaining_text = line:sub(end_pos + 1)
+              local remaining_start_pos = start_pos - 1 + symbol_length
+              vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
+                end_col = #line,
+                virt_text = {{remaining_text, hl_group}},
+                virt_text_pos = "inline",
+                hl_group = hl_group,
+              })
+            end
           end
 
           start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
