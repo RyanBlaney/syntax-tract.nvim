@@ -33,15 +33,21 @@ M.setup = function(opts)
       for word, symbol in pairs(lang_opts.words) do
         -- Escape special characters
         local escaped_word = word:gsub("([.*+?^$()%%{}|[\\]])", "%%%1")
+        -- Use Lua's pattern matching to find the word
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
+          -- local symbol_visual_width = get_visual_width(symbol)
           local symbol_length = get_visual_width(symbol)
           local end_col = end_pos
           if symbol_length > 1 then
-            end_col = start_pos + symbol_length
+            end_col = end_pos - start_pos + symbol_length
           else
             end_col = end_pos
           end
+          -- local padding = ""
+          -- for i = 0,(word - symbol_length) do
+          --   padding = padding .. " "
+          -- end
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_col,
             conceal = "",
@@ -124,7 +130,7 @@ M.setup = function(opts)
   M.handle_cursor_moved = function(bufnr)
     local line_nr = vim.fn.line('.') - 1
 
-    M.conceal_words(bufnr, vim.bo[bufnr].filetype)
+    -- M.conceal_words(bufnr, vim.bo[bufnr].filetype)
     vim.api.nvim_buf_clear_namespace(bufnr, vim.api.nvim_create_namespace("syntax_tract_words"), line_nr, line_nr + 1)
 
     M.conceal_braces(bufnr, vim.bo[bufnr].filetype)
@@ -138,9 +144,10 @@ M.setup = function(opts)
         autocmd!
         autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_words(0, '%s')
         autocmd BufReadPost,BufWritePost *.%s lua require('syntax-tract').conceal_braces(0, '%s')
+        autocmd CursorMoved *.%s lua require('syntax-tract').conceal_words(0, '%s')
         autocmd CursorMoved *.%s lua require('syntax-tract').handle_cursor_moved(0)
       augroup END
-    ]], lang, lang, lang, lang, lang, lang))
+    ]], lang, lang, lang, lang, lang, lang, lang, lang))
   end
 end
 

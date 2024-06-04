@@ -1,4 +1,5 @@
 
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -36,22 +37,27 @@ M.setup = function(opts)
         -- Use Lua's pattern matching to find the word
         local start_pos, end_pos = string.find(line, escaped_word)
         while start_pos do
-          -- local symbol_visual_width = get_visual_width(symbol)
+          local word_length = get_visual_width(word)
           local symbol_length = get_visual_width(symbol)
           local end_col = end_pos
-          if symbol_length > 1 then
-            end_col = end_pos - start_pos + symbol_length
+          
+          -- Calculate end_col based on symbol length
+          if symbol_length > word_length then
+            end_col = start_pos - 1 + symbol_length
           else
             end_col = end_pos
           end
-          -- local padding = ""
-          -- for i = 0,(word - symbol_length) do
-          --   padding = padding .. " "
-          -- end
+          
+          -- Generate padding spaces if symbol is shorter
+          local padding = ""
+          if word_length > symbol_length then
+            padding = string.rep(" ", word_length - symbol_length)
+          end
+          
           vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr-1, start_pos-1, {
             end_col = end_col,
             conceal = "",
-            virt_text = {{symbol, hl_group}},
+            virt_text = {{symbol .. padding, hl_group}},
             virt_text_pos = "overlay",
             hl_group = hl_group,
           })
