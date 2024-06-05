@@ -58,14 +58,6 @@ M.setup = function(opts)
           end
 
           if not already_replaced then
-            vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
-              end_col = start_pos - 1 + word_length,
-              conceal = "",
-              virt_text = {{symbol, hl_group}},
-              virt_text_pos = "overlay",
-              hl_group = hl_group,
-            })
-
             -- Adjust remaining text position if symbol is longer than the word
             if symbol_length > word_length then
               local remaining_text = line:sub(end_pos + 1)
@@ -73,9 +65,17 @@ M.setup = function(opts)
               local padding = string.rep(" ", padding_length)
               local remaining_start_pos = start_pos - 1 + symbol_length
               vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
-                end_col = --[[ #line ]]end_col,
+                end_col = end_col,
                 virt_text = {{padding .. remaining_text, hl_group}},
                 virt_text_pos = "inline",
+                hl_group = hl_group,
+              })
+            else
+              vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
+                end_col = start_pos - 1 + word_length,
+                conceal = "",
+                virt_text = {{symbol, hl_group}},
+                virt_text_pos = "overlay",
                 hl_group = hl_group,
               })
             end
