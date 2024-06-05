@@ -53,7 +53,7 @@ M.setup = function(opts)
             local end_col = start_pos - 1 + word_length
 
             if symbol_length > word_length then
-              end_col = end_col - remaining_text
+              end_col = end_col - symbol_length
             end
 
             vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
