@@ -49,7 +49,6 @@ M.setup = function(opts)
           end
 
           if not already_replaced then
-            local remaining_text = ""
             local end_col = start_pos - 1 + word_length
 
             if symbol_length > word_length then
@@ -71,9 +70,9 @@ M.setup = function(opts)
               local remaining_start_pos = start_pos - 1 + symbol_length
               vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
                 end_col = #line,
-                virt_text = {{padding .. remaining_text, "Normal"}},
+                virt_text = {{padding, "Normal"}},
                 virt_text_pos = "inline",
-                hl_group = hl_group,
+                -- hl_group = hl_group,
               })
             end
           end
