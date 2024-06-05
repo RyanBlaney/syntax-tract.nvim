@@ -53,9 +53,9 @@ M.setup = function(opts)
 
             local end_col = start_pos - 1 + word_length
             if symbol_remainder > 0 then
-              end_col = end_col + symbol_remainder
+              end_col = end_col - symbol_remainder
             end
-            local remaining_text = string.sub(line, end_col, #line)
+            -- local remaining_text = string.sub(line, end_col, #line)
 
 
             vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
