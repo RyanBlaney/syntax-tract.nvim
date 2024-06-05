@@ -67,9 +67,7 @@ M.setup = function(opts)
             -- Adjust remaining text position if symbol is longer than the word
             if symbol_length > word_length then
               local remaining_text = line:sub(end_pos + 1)
-              local padding_length = symbol_length - word_length
-              local padding = string.rep(" ", padding_length)
-              local remaining_start_pos = start_pos - 1 + symbol_length
+              local remaining_start_pos = start_pos + symbol_length
               vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
                 virt_text = {{remaining_text, "Normal"}},
                 virt_text_pos = "inline",
