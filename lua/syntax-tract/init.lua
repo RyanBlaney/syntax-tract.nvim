@@ -75,7 +75,7 @@ M.setup = function(opts)
             end
           end
 
-          start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
+          -- start_pos, end_pos = string.find(line, escaped_word, end_pos + 1)
         end
       end
     end
