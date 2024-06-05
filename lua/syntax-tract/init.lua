@@ -49,7 +49,7 @@ M.setup = function(opts)
           end
 
           if not already_replaced then
-            local end_col = start_pos + word_length
+            local end_col = start_pos + 1 + word_length
             local remaining_text = string.sub(line, end_col, #line)
 
 
