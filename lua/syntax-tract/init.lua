@@ -13,8 +13,12 @@ M.setup = function(opts)
 
   local function get_visual_width(str)
     local visual_width = 0
-    for _ in string.gmatch(str, ".[\128-\191]*") do
-      visual_width = visual_width + 1
+    for char in string.gmatch(str, ".[\128-\191]*") do
+      if string.match(char, "[%z\1-\127\194-\244][\128-\191]*") then
+        visual_width = visual_width + 2 -- assuming emoji and other wide characters take two spaces
+      else
+        visual_width = visual_width + 1
+      end
     end
     return visual_width
   end
