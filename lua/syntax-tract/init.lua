@@ -38,14 +38,6 @@ M.setup = function(opts)
         while start_pos do
           local word_length = get_visual_width(word)
           local symbol_length = get_visual_width(symbol)
-          local end_col = end_pos
-
-          -- Adjust end_col to account for symbol length
-          if symbol_length > word_length then
-            end_col = start_pos - 1 + symbol_length
-          else
-            end_col = end_pos
-          end
 
           -- Check if the symbol is already replaced
           local existing_marks = vim.api.nvim_buf_get_extmarks(bufnr, ns_id, {linenr-1, start_pos-1}, {linenr-1, start_pos-1}, {details = true})
@@ -59,7 +51,7 @@ M.setup = function(opts)
 
           if not already_replaced then
             vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
-              end_col = end_col,
+              end_col = start_pos - 1 + word_length,
               conceal = "",
               virt_text = {{symbol, hl_group}},
               virt_text_pos = "overlay",
@@ -73,7 +65,7 @@ M.setup = function(opts)
               local padding = string.rep(" ", padding_length)
               local remaining_start_pos = start_pos - 1 + symbol_length
               vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
-                end_col = #line,
+                end_col = #remaining_text,
                 virt_text = {{padding .. remaining_text, hl_group}},
                 virt_text_pos = "inline",
                 hl_group = hl_group,
