@@ -49,7 +49,7 @@ M.setup = function(opts)
           end
 
           if not already_replaced then
-            local end_col = start_pos + 1 + word_length
+            local end_col = start_pos + word_length
             local remaining_text = string.sub(line, end_col, #line)
 
 
@@ -63,7 +63,7 @@ M.setup = function(opts)
 
             -- Adjust remaining text position if symbol is longer than the word
             if symbol_length > word_length then
-              local padding_length = symbol_length - word_length
+              local padding_length = symbol_length - word_length + 1
               local padding = string.rep(" ", padding_length)
               local remaining_start_pos = start_pos - 1 + symbol_length
               vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
