@@ -51,9 +51,13 @@ M.setup = function(opts)
 
           if not already_replaced then
             local remaining_text = line:sub(end_pos + 1)
+            local end_col = start_pos - 1 + word_length
+            if symbol_length > word_length then
+              end_col = end_col - remaining_text
+            end
 
             vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
-              end_col = start_pos - 1 + word_length - remaining_text,
+              end_col = end_col,
               conceal = "",
               virt_text = {{symbol, hl_group}},
               virt_text_pos = "overlay",
