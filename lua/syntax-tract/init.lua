@@ -72,7 +72,7 @@ M.setup = function(opts)
               local padding = string.rep(" ", padding_length)
               local remaining_start_pos = start_pos - 1 + symbol_length
               vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
-                end_col = #line - end_col,
+                end_col = end_col + padding_length + #remaining_text,
                 virt_text = {{padding .. remaining_text, "Normal"}},
                 virt_text_pos = "inline",
               })
