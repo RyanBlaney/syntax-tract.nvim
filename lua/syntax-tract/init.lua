@@ -61,10 +61,6 @@ M.setup = function(opts)
               hl_group = hl_group,
             })
 
-            if symbol_length > word_length then
-              end_col = end_col - remaining_text
-            end
-
             -- Adjust remaining text position if symbol is longer than the word
             if symbol_length > word_length then
               local padding_length = symbol_length - word_length
