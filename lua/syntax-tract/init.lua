@@ -50,7 +50,7 @@ M.setup = function(opts)
           end
 
           if not already_replaced then
-            local remaining_text = line:sub(end_pos + 1)
+            local remaining_text = symbol_length
             local end_col = start_pos - 1 + word_length
             if symbol_length > word_length then
               end_col = end_col - remaining_text
