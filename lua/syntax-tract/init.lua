@@ -49,7 +49,12 @@ M.setup = function(opts)
           end
 
           if not already_replaced then
+            local symbol_remainder = symbol_length - word_length
+
             local end_col = start_pos - 1 + word_length
+            if symbol_remainder > 0 then
+              end_col = end_col + symbol_remainder
+            end
             local remaining_text = string.sub(line, end_col, #line)
 
 
