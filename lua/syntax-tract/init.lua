@@ -52,9 +52,7 @@ M.setup = function(opts)
           if not already_replaced then
             local remaining_text = symbol_length
             local end_col = start_pos - 1 + word_length
-            if symbol_length > word_length then
-              end_col = end_col - remaining_text + 1
-            end
+
 
             vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
               end_col = end_col,
@@ -63,6 +61,10 @@ M.setup = function(opts)
               virt_text_pos = "overlay",
               hl_group = hl_group,
             })
+
+            if symbol_length > word_length then
+              end_col = end_col - remaining_text
+            end
 
             -- Adjust remaining text position if symbol is longer than the word
             if symbol_length > word_length then
