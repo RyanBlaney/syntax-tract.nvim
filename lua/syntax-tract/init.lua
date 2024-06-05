@@ -70,7 +70,7 @@ M.setup = function(opts)
                 end_col = #line,
                 virt_text = {{padding .. remaining_text, "Normal"}},
                 virt_text_pos = "inline",
-                hl_group = hl_group,
+                -- hl_group = hl_group,
               })
             end
           end
