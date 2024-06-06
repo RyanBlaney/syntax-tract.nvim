@@ -61,7 +61,7 @@ M.setup = function(opts)
             end_col = math.min(end_col, #line)
 
             vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
-              end_col = end_col,
+              end_col = end_col - 1,
               conceal = "",
               virt_text = {{symbol, hl_group}},
               virt_text_pos = "overlay",
