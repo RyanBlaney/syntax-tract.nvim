@@ -1,3 +1,4 @@
+
 local M = {}
 local defaults = require('syntax-tract.defaults').defaults
 
@@ -48,8 +49,11 @@ M.setup = function(opts)
             local end_col = start_pos - 1 + word_length
 
             if symbol_length > word_length then
-              end_col = end_col - symbol_length
+              end_col = end_pos + (symbol_length - word_length)
             end
+
+            -- Ensure end_col does not exceed line length
+            end_col = math.min(end_col, #line)
 
             vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, start_pos - 1, {
               end_col = end_col,
@@ -63,12 +67,12 @@ M.setup = function(opts)
             if symbol_length > word_length then
               local padding_length = symbol_length - word_length
               local padding = string.rep(" ", padding_length)
+              local remaining_text = line:sub(end_pos + 1)
               local remaining_start_pos = start_pos - 1 + symbol_length
               vim.api.nvim_buf_set_extmark(bufnr, ns_id, linenr - 1, remaining_start_pos, {
-                end_col = #line,
-                virt_text = {{padding, "Normal"}},
+                end_col = math.min(remaining_start_pos + #remaining_text, #line),
+                virt_text = {{padding .. remaining_text, "Normal"}},
                 virt_text_pos = "inline",
-                -- hl_group = hl_group,
               })
             end
           end
@@ -170,3 +174,4 @@ M.setup = function(opts)
 end
 
 return M
+

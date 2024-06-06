@@ -12,11 +12,7 @@ M.setup = function(opts)
   end
 
   local function get_visual_width(str)
-    local visual_width = 0
-    for _ in string.gmatch(str, ".[\128-\191]*") do
-      visual_width = visual_width + 1
-    end
-    return visual_width
+    return vim.fn.strdisplaywidth(str)
   end
 
   -- Function to conceal words
