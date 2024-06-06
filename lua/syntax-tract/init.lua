@@ -13,6 +13,12 @@ M.setup = function(opts)
   end
 
   local function get_visual_width(str)
+    local special_chars = { "🌕", "🌖", "🌗", "🌘", "🌑" }
+    for _, char in ipairs(special_chars) do
+      if str == char then
+        return 1
+      end
+    end
     return vim.fn.strdisplaywidth(str)
   end
 
